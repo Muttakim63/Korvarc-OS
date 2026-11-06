@@ -50,4 +50,8 @@ htmlcov/
 .DS_Store
 .vscode/
 .idea/
+*.log
+*.app
+Launch_KORVARC_OS.command
+launch_korvarc.sh
 
