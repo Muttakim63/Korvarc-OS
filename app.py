@@ -6,8 +6,16 @@ Preferred launch command:
 
 from __future__ import annotations
 
+import base64
 import os
 import streamlit as st
+
+def _get_logo_base64() -> str:
+    asset_path = os.path.join(os.path.dirname(__file__), "assets", "logo_small.png")
+    if os.path.exists(asset_path):
+        with open(asset_path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+    return ""
 
 # Find favicon path
 _FAVICON_PATH = os.path.join(os.path.dirname(__file__), "assets", "favicon.png")
@@ -23,7 +31,6 @@ st.set_page_config(
 
 from korvarc.ai.manager import AIManager
 from korvarc.database.connection import init_db
-from korvarc.ui.components import get_logo_base64
 from korvarc.ui.theme import apply_theme
 from korvarc.ui.views.analytics import render_analytics
 from korvarc.ui.views.brands import render_brands
@@ -42,7 +49,7 @@ init_db()
 apply_theme()
 
 # Base64 logo for clean branding
-_LOGO_B64 = get_logo_base64()
+_LOGO_B64 = _get_logo_base64()
 _LOGO_SIDEBAR_IMG = (
     f'<img src="data:image/png;base64,{_LOGO_B64}" style="width: 38px; height: 38px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);" />'
     if _LOGO_B64
