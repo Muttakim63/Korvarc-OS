@@ -9,16 +9,21 @@ from __future__ import annotations
 import os
 import streamlit as st
 
+# Find favicon path
+_FAVICON_PATH = os.path.join(os.path.dirname(__file__), "assets", "favicon.png")
+_PAGE_ICON = _FAVICON_PATH if os.path.exists(_FAVICON_PATH) else "⚡"
+
 # Streamlit Page Setup must be the first command
 st.set_page_config(
     page_title="KORVARC OS",
-    page_icon="⚡",
+    page_icon=_PAGE_ICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 from korvarc.ai.manager import AIManager
 from korvarc.database.connection import init_db
+from korvarc.ui.components import get_logo_base64
 from korvarc.ui.theme import apply_theme
 from korvarc.ui.views.analytics import render_analytics
 from korvarc.ui.views.brands import render_brands
@@ -36,14 +41,28 @@ init_db()
 # Apply Premium Dark CSS
 apply_theme()
 
+# Base64 logo for clean branding
+_LOGO_B64 = get_logo_base64()
+_LOGO_SIDEBAR_IMG = (
+    f'<img src="data:image/png;base64,{_LOGO_B64}" style="width: 38px; height: 38px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);" />'
+    if _LOGO_B64
+    else '<span style="font-size: 1.5rem;">⚡</span>'
+)
+
 # Optional Operator Access PIN Gate (Protects local network and mobile access)
 configured_pin = AIManager.get_setting("access_pin", os.getenv("KORVARC_ACCESS_PIN", ""))
 if configured_pin:
     if not st.session_state.get("is_authenticated", False):
+        _gate_logo_html = (
+            f'<img src="data:image/png;base64,{_LOGO_B64}" style="width: 72px; height: 72px; border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.6);" />'
+            if _LOGO_B64
+            else ""
+        )
         st.markdown(
-            """
-            <div style="max-width: 440px; margin: 80px auto 20px auto; background-color: #161920; border: 1px solid #232A38; border-radius: 8px; padding: 2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; letter-spacing: 0.05em; margin-bottom: 4px;">⚡ KORVARC OS</div>
+            f"""
+            <div style="max-width: 440px; margin: 80px auto 20px auto; background-color: #161920; border: 1px solid #232A38; border-radius: 12px; padding: 2.2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center;">
+                {_gate_logo_html}
+                <div style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; letter-spacing: 0.05em; margin-bottom: 4px;">KORVARC OS</div>
                 <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8E9BAE; margin-bottom: 24px;">Restricted Operator Access</div>
             </div>
             """,
@@ -76,13 +95,16 @@ NAV_ITEMS = [
 # Sidebar
 with st.sidebar:
     st.markdown(
-        """
-        <div style="padding: 10px 0 20px 0; border-bottom: 1px solid #202632; margin-bottom: 15px;">
-            <div style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.08em; color: #F8FAFC;">
-                ⚡ KORVARC OS
-            </div>
-            <div style="font-size: 0.72rem; color: #8E9BAE; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px;">
-                AI Sponsorship Agency Engine
+        f"""
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0 18px 0; border-bottom: 1px solid #202632; margin-bottom: 15px;">
+            {_LOGO_SIDEBAR_IMG}
+            <div>
+                <div style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.08em; color: #F8FAFC; line-height: 1.2;">
+                    KORVARC OS
+                </div>
+                <div style="font-size: 0.68rem; color: #8E9BAE; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px;">
+                    AI Sponsorship Agency
+                </div>
             </div>
         </div>
         """,

@@ -2,7 +2,19 @@
 
 from __future__ import annotations
 
+import base64
+import os
 import streamlit as st
+
+
+def get_logo_base64() -> str:
+    """Returns the base64-encoded logo image for fast inline HTML rendering."""
+    asset_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "assets", "logo_small.png")
+    norm_path = os.path.normpath(asset_path)
+    if os.path.exists(norm_path):
+        with open(norm_path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+    return ""
 
 
 def render_metric_card(label: str, value: str | int | float, subtext: str = ""):
